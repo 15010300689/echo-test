@@ -1,0 +1,68 @@
+---
+description: 前端通用 Rules - 适用于 React / Vue / TypeScript 项目
+alwaysApply: true
+---
+# 前端通用 Rules - 适用于 React / Vue / TypeScript 项目
+
+## 核心原则（永远优先遵守）
+1. 优先使用 TypeScript（严格模式）
+2. 优先函数式 + hooks 写法，class 组件仅在极特殊场景使用
+3. 组件尽量小而纯（单一职责），单个文件不超过 300–400 行
+4. UI 优先使用可组合、可复用的原子组件 + 组合组件模式
+5. 状态管理：能用 useState + useReducer 解决就不引入 Zustand / Jotai / Redux
+6. 样式：优先 Tailwind CSS + shadcn/ui / Radix UI / Headless UI 组合
+7. 代码风格严格遵循 ESLint + Prettier + typescript-eslint 推荐规则
+8. 永远写 JSDoc / TSDoc 注释（尤其是工具函数、hooks、复杂组件）
+9. 优先使用现代语法（可选链、nullish 合并、top-level await 等）
+
+## 文件与目录命名规范
+- 组件文件：PascalCase.tsx（例：UserProfileCard.tsx）
+- hooks 文件：camelCase.ts（例：useDebounce.ts）
+- 工具函数：camelCase.ts（例：formatCurrency.ts）
+- 常量：UPPER_SNAKE_CASE 或 camelCase（看语义）
+- 类型定义：统一放在 types/ 或同文件内以 I、T、S 前缀（视团队习惯）
+- 测试文件：同名 + .test.tsx / .spec.tsx
+- Storybook 文件：同名 + .stories.tsx
+
+## 组件编写规范
+1. 所有组件必须导出类型 Props（interface 或 type）
+2. 优先使用解构 + 默认值写法
+3. 必须显式声明 children?: ReactNode
+4. 动态 className 使用 clsx 或 cva（class-variance-authority）
+5. 禁止在组件内部写业务逻辑超过 30 行 → 抽离到 hooks / utils
+6. 所有副作用必须放在 useEffect 中，并写清楚依赖数组
+7. 自定义 hooks 命名必须以 use 开头
+8. 禁止在 render 阶段产生副作用（setState、dispatch 等）
+
+## 推荐的组件 Props 写法（现代风格）
+```tsx
+interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'
+  size?: 'sm' | 'default' | 'lg' | 'icon'
+  asChild?: boolean
+  loading?: boolean
+  leftIcon?: React.ReactNode
+  rightIcon?: React.ReactNode
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
+      variant = 'primary',
+      size = 'default',
+      asChild = false,
+      loading = false,
+      leftIcon,
+      rightIcon,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    // ...
+  }
+)
+Button.displayName = 'Button'
+

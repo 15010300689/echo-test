@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+    
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="format-detection" content="email=no" />
+        <meta name="format-detection" content="address=no;">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <title>
+                                家政服务
+        </title>
+        <!-- <script>
+            if (!system) return;
+            // 接收快应用发来的消息
+            var recievedData = '';
+            system.onmessage = function(data) {
+                console.info("onmessage data="+data);
+                var nData = JSON.parse(data);
+                recievedData = nData;
+            }
+        </script> -->
+        <script>
+            // if (!system) return;
+            // 接收快应用发来的消息
+            var recievedData = '';
+            system.onmessage = function(data) {
+                console.info("onmessage data="+data);
+                var nData = JSON.parse(data);
+                recievedData = nData;
+            }
+            document.addEventListener('DOMContentLoaded', function() {
+                // DOM完全加载后执行的代码
+                console.log('DOM is fully loaded and parsed', window.navigator.userAgent);
+                if (window.navigator.userAgent.indexOf("hap") >= 0) {
+                    console.log('在快应用环境中');
+                    // execBusinessLogic(recievedData)
+                    execBusinessLogic({});
+                    handleGetMessage();
+                }
+            });
+            function handleGetMessage() {
+                let stopId = null;
+                var btn = document.getElementById('btn');
+                
+                if (recievedData) {
+                    clearTimeout(stopId);
+                    console.log('result', JSON.parse(recievedData.message));
+                    recievedData = JSON.parse(recievedData.message);
+                    if (recievedData.ppu) {
+                        btn.innerHTML = '已登录'
+                    }
+                    return;
+                }
+                stopId = setTimeout(function() {
+                    this.handleGetMessage();
+                }, 2000);
+
+            }
+            function execBusinessLogic(data) {
+                //执行业务逻辑的代码
+                console.log('execBusinessLogic', data);
+                var btn = document.getElementById('btn');
+                var ppu = getCookie('PPU') || '';
+                var rpk_location = getCookie('rpk_location') || '{}';
+                rpk_location = JSON.parse(rpk_location);
+                console.log('rpk_location', rpk_location, rpk_location.lon, rpk_location.lat);
+                console.log('ppu', ppu.length);
+                ppu = ppu.trim()
+
+                var city = getCookie('mcity') || '';
+                console.log('city', city); // city为listname
+                if (ppu.length != 0) {
+                    btn.innerHTML = '已登录'
+                }
+                      
+
+                // reload: current/target
+                btn.onclick = function() {
+                    if (ppu.length != 0) {
+                        alert('已经登录过了，请勿重复登录');
+                        return;
+                    }
+                    alert('去登录');
+                    data = { 
+                        action:'login', 
+                        // autoReload: false
+                        reloadPage: 'current' 
+                    }
+                    system.postMessage(JSON.stringify(data));
+                }
+
+                handleJump();
+
+            }
+
+            function getCookie(name) {
+                const reg = new RegExp(`(^| )${name}=([^;]*)(;|$)`);
+                const arr = document.cookie.match(reg);
+                if (arr === null) return null;
+                return unescape(arr[2]);
+            }
+
+            function handleJump() {
+                if (system)
+                var btn1 = document.getElementById('btn1');
+                var btn2 = document.getElementById('btn2');
+                btn1.onclick = function() {
+                    alert('在新窗口打开');
+                    // const jumpUrl = encodeURIComponent('https://luna.58.com/info/57939948486441?slot_id=1004361&adtype=43&busInfo={%22transData%22:%221778675224041025538,1778675224162664448,dd98145b-deae-463e-86e0-02ffb2cb933a,2%22}&spm=NULL_SPM&utm_source=NULL_UTM&entinfo=57939948486441_0&slot=lm_list_diversity&-15=20&lego_tid=dd98145b-deae-463e-86e0-02ffb2cb933a&pos=1&extParam=%7B%22adxcid%22%3A%221715135856036X6EpMGOkC6mUg23O6v8%22%7D&entityType=0&psid=162691871224806286881800548&busTransInfo=%7B%22transInfo%22%3A%22hjhEu7eouwot%5EPFX%5ExFQuxSAu4Ytu4SQ%5E7uXk4UK%5EPZN%5EPVEuxYt%5ExSN%5ExYA%5E4Z-RbYGq4UA%5E3SORbh6RwAA%5Ex%5E5k7ZNR7eOu4zjRjSEfNSGuP%5E6k4S-u7etu7Z-uwoKq4eou4e-%5EPZou4eo%22%7D&cid=1715135856036X6EpMGOkC6mUg23O6v8&ad_id=1778675224133283843');
+                    const jumpUrl = encodeURIComponent('https://jiazheng.58.com/cfe/auntList');
+                    data = { action:'jump', jumpUrl}
+                    system.postMessage(JSON.stringify(data));
+                }
+                btn2.onclick = function() {
+                    alert('在当前窗口替换');
+                    const jumpUrl = encodeURIComponent('https://luna.58.com/info/57939948486441?slot_id=1004361&adtype=43&busInfo={%22transData%22:%221778675224041025538,1778675224162664448,dd98145b-deae-463e-86e0-02ffb2cb933a,2%22}&spm=NULL_SPM&utm_source=NULL_UTM&entinfo=57939948486441_0&slot=lm_list_diversity&-15=20&lego_tid=dd98145b-deae-463e-86e0-02ffb2cb933a&pos=1&extParam=%7B%22adxcid%22%3A%221715135856036X6EpMGOkC6mUg23O6v8%22%7D&entityType=0&psid=162691871224806286881800548&busTransInfo=%7B%22transInfo%22%3A%22hjhEu7eouwot%5EPFX%5ExFQuxSAu4Ytu4SQ%5E7uXk4UK%5EPZN%5EPVEuxYt%5ExSN%5ExYA%5E4Z-RbYGq4UA%5E3SORbh6RwAA%5Ex%5E5k7ZNR7eOu4zjRjSEfNSGuP%5E6k4S-u7etu7Z-uwoKq4eou4e-%5EPZou4eo%22%7D&cid=1715135856036X6EpMGOkC6mUg23O6v8&ad_id=1778675224133283843');
+                    data = { action:'jump', jumpUrl, jumpType: 'replace'}
+                    system.postMessage(JSON.stringify(data));
+                }
+
+
+                var btn3 = document.getElementById('btn3');
+                btn3.onclick = function() {
+                    // hap://app/com.wuba.hwquickapp/Pages/MiddleRedirect?target=huangyezonghe&spm=u-2hmtvmphbwgurvesg.mhy_kuaiyingyong_sibing
+
+
+                }
+
+                var btn4 = document.getElementById('btn4');
+                btn4.onclick = function() {
+                    data = { 
+                        action:'back'
+                    }
+                    system.postMessage(JSON.stringify(data));
+                }
+            }
+        </script>
+
+        <script src="//j1.58cdn.com.cn/beidou-sdk/browser/bundle.min_v20230320171107.js"></script>
+        <script type="text/javascript">
+            Beidou.init({
+                projectId: 187,
+                ignoreErrors : [
+                /TypeError:Cannot assign to read only property 'timeStamp' of object '#<MouseEvent>'/,
+                /TypeError:Cannot read property 'trigger' of undefined/,
+                /TypeError:undefined is not an object (evaluating 'touch.el.trigger')/,
+            ],
+                isProd: true,
+                isDebug: false
+            });
+        </script>
+
+        <script type="text/javascript"> 
+         var _rootDomainNoProtocol = "m.58.com";
+         var _rootDomain = "//luna.58.com";
+         var _jsRootPath = "//static.58.com/m58/m3/js";
+         var hySearchBox = 0 ;
+         var _keyfrom = ""; 
+         try {
+             var ____json4fe = {
+                 "catentry": [{
+                     "dispid": "8512",
+                     "name": "家政服务",
+                     "listname": "shenghuo"
+                 }],
+                 "locallist": [{
+                     "dispid": "1",
+                     "name": "北京",
+                     "listname": "bj"
+                 }],
+                 "modules": "list",
+                 "creativeid": "4"
+             }
+         } catch(e) {}; 
+         var ____loadCfg = ['shenghuo', 'common', 'catg'];
+         </script>
+        <script src='//j1.58cdn.com.cn/crop/biz/base/js/lunaFontSize_v20170103175713.js'></script>
+                <link rel="stylesheet" type="text/css" href='//c.58cdn.com.cn/crop/biz/m/lunaHome/css/bundle_v20240418155438.css' />
+        	<script>
+		var __modelObj = {"type":"家政","name":"jiazheng_common","modelList":[{"modelType":"icon_5_new","infoList":[{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-icon-banjia","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v25b273183ee05434e94815d9fe9ab188d.png","txt":"搬家"},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-icon-baojie","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v27399a36927b2494d8f0fa5b50aafb72a.png","txt":"保洁"},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-icon-baomu","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v284600806ef6e4aebb2477a673bffcb43.png","txt":"保姆月嫂"},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-icon-dianqi","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v274a2e6244c354028904d9019e46c932b.png","txt":"家电维修"},{"cateid":"8516","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=fangweixiu&-15=20","tag":"lunajz-icon-fangweixiu","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v20f396e1a724d47f3b180a506e0f91a0d.png","txt":"房屋维修"},{"cateid":"460","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=kaisuo&-15=20","tag":"lunajz-icon-kaisuo","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v29e0c016c537446f0a939b91092b6d819.png","txt":"开锁换锁"},{"cateid":"609","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=jiazhuang&-15=20","tag":"lunajz-icon-jiazhuang","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2971746afd454400fbf60df403c19e919.png","txt":"家装"},{"cateid":"8523","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=shutong&-15=20","tag":"lunajz-icon-shutong","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v275b34de626244af89fa8fea4a33a6f7a.png","txt":"管道疏通"},{"cateid":"111","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=weixiu&-15=20","tag":"lunajz-icon-weixiu","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2e1bb377ba8f14f30bb0e28e3dbf5dbfe.png","txt":"电脑维修"},{"cateid":"125","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=zhuce&-15=20","tag":"lunajz-icon-zhuce","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2d1ca28f1db7f4c96b6acb772a73d1578.png","txt":"工商注册"},{"cateid":"156","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=zuche&-15=20","tag":"lunajz-icon-zuche","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2aee2a8cecedb41398b249b3c704b7bc1.png","txt":"租车"},{"cateid":"14000","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=danbaobaoxiantouzi&-15=20","tag":"lunajz-icon-danbao","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v20de9ea879ffd48f79364974d64d255e1.png","txt":"投资担保"},{"cateid":"8605","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=canyinjia&-15=20","tag":"lunajz-icon-canyinjia","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2d60c2b2303e94fc9898b117892238360.png","txt":"餐饮加盟"},{"cateid":"234","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=jiancai&-15=20","tag":"lunajz-icon-jiancai","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v22d5249b4f13547b686c287b1478f2da9.png","txt":"建材"},{"cateid":"360","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=zulin&-15=20","tag":"lunajz-icon-zulin","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2fabbfa5bc4ab470a875f9302ec9887d4.png","txt":"租赁"},{"cateid":"70123","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=huishoujy&-15=20","tag":"lunajz-icon-huishou","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2566699f1535c493181f4af1d60d35532.png","txt":"回收"},{"cateid":"14455","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=zhiyepeix&-15=20","tag":"lunajz-icon-zhiyepeix","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2d09c1e2cc48b4eeda5b81c7072c4aad1.png","txt":"技能培训"},{"cateid":"212","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=huoyun&-15=20","tag":"lunajz-icon-huoyun","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2264881846ba74ad8bc559e82954992f5.png","txt":"货运物流"},{"cateid":"102","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=songshui&-15=20","tag":"lunajz-icon-songshui","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2750afd93d3b541f9bf4f53cfa3a87dc5.png","txt":"生活配送"},{"cateid":"14326","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=techang&-15=20","tag":"lunajz-icon-techang","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2062de05bd4de4984a372c31a243148c1.png","txt":"艺术培训"}]},{"modelType":"banner_2_title","cateid":" ","title":"热门推荐","guide":" ","linkUrl":" ","iconUrl":"","tag":" ","infoList":[{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-hot-banjia","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v21e29709c364146e09c49feeb633b86a9.png"},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-hot-dianqi","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2a4e8a6c622d04c7da7e711e2c9ca06ed.png"},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-hot-baojie","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2efb0c88c8cbe41c5bc47cb415a68cf4c.png"},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-hot-baomu","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v224852d49ebbd486cb4a29c7219a15fd7.png"}]},{"modelType":"link_4_white_new","cateid":"96","title":"搬家服务","guide":"查看全部","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","iconUrl":"","tag":"lunajz-banjia-title","infoList":[{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-1","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v28ac5effdef9147268bf6890a851c81a2.png","txt":"速达搬家","imgLabel":" ","hot":0,"new":0},{"cateid":"570","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=gongsibanjia&-15=20","tag":"lunajz-banjia-2","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v283294865ea384a2290b189c226c7cc73.png","txt":"公司搬家","imgLabel":" ","hot":0,"new":0},{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-3","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v251410df94e834a33bd4250c9ac121317.png","txt":"放心搬运","imgLabel":" ","hot":0,"new":0},{"cateid":"28953","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=xiaoxingbanjia&-15=20","tag":"lunajz-banjia-4","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v22d6378c9613a49d79386a3b4b40d2f25.png","txt":"小型搬家","imgLabel":" ","hot":0,"new":0}],"infoList1":[{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-5","txt":"搬家服务","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-6","txt":"靠谱搬家","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-7","txt":"免费上门","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-8","txt":"随约随到","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-9","txt":"金杯搬家","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-10","txt":"打包服务","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-11","txt":"小面包车","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"96","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20","tag":"lunajz-banjia-12","txt":"设备搬迁","txticonUrl":"","hot":0,"red":0,"show":0}]},{"modelType":"list_1_row","infoList":[{"cateid":"96","catename":"banjia","num":"30","listStyle":"hypic"}],"cateid":" ","linkUrl":" ","guide":" ","tag":" ","title":""},{"modelType":"link_4_white_new","cateid":"168","title":"保洁服务","guide":"查看全部","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","iconUrl":"","tag":"lunajz-baojie-title","infoList":[{"cateid":"34935","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=jiatingbaojie&-15=20","tag":"lunajz-baojie-1","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2d9377308de4d433ba2305074b5dc1ed5.png","txt":"家庭保洁","imgLabel":" ","hot":0,"new":0},{"cateid":"668","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=kaihuangbaojie&-15=20","tag":"lunajz-baojie-2","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v237673083eb4f454a89aae3f6bcc9a00c.png","txt":"开荒保洁","imgLabel":"","hot":0,"new":0},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-baojie-3","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2b0d5c6112a7047d599342576d73ad71e.png","txt":"保洁清洗","imgLabel":" ","hot":0,"new":0},{"cateid":"34376","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=kongqijinghua&-15=20","tag":"lunajz-baojie-4","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2a48c16cb543e46a8bd8e78016a24f0fa.png","txt":"空气净化","imgLabel":" ","hot":0,"new":0}],"infoList1":[{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-baojie-5","txt":"全年无休","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-baojie-6","txt":"除虫除蚁","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-baojie-7","txt":"就近上门","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-baojie-8","txt":"除甲醛","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-baojie-9","txt":"垃圾清运","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-baojie-10","txt":"高空作业","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-baojie-11","txt":"专业保洁","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"168","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baojie&-15=20","tag":"lunajz-baojie-12","txt":"随约随到","txticonUrl":" ","hot":0,"red":0,"show":0}]},{"modelType":"list_1_row","infoList":[{"cateid":"168","catename":"baojie","num":"30","listStyle":"hypic"}],"cateid":" ","linkUrl":" ","guide":" ","tag":" ","title":""},{"modelType":"link_4_white_new","cateid":"203","title":"维修服务","guide":"查看全部","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","iconUrl":"","tag":"lunajz-dianqi-title","infoList":[{"cateid":"711","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=kongtiao&-15=20","tag":"lunajz-dianqi-1","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v21b7a7d4548de450ca89f30aa6a56a04c.png","txt":"空调维修","imgLabel":" ","hot":0,"new":0},{"cateid":"34762","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=chufangwx&-15=20","tag":"lunajz-dianqi-2","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2ab5cad81c34d41c7a8c81a87bf7f4047.png","txt":"厨房家电","imgLabel":" ","hot":0,"new":0},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-dianqi-3","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2774bfc05d5324b37ac052c9604909be4.png","txt":"家电维修","imgLabel":" ","hot":0,"new":0},{"cateid":"713","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=reshuiqiweixiu&-15=20","tag":"lunajz-dianqi-4","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2ca11f34359d44605a65f6c4ee4fc8a68.png","txt":"热水器维修","imgLabel":" ","hot":0,"new":0}],"infoList1":[{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-dianqi-11","txt":"家电维修","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-dianqi-5","txt":"换零配件","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-dianqi-6","txt":"环保材料","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-dianqi-7","txt":"上门检修","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-dianqi-8","txt":"售后维修","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-dianqi-9","txt":"快速上门","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-dianqi-10","txt":"免预约","txticonUrl":"","hot":0,"red":0,"show":0},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-dianqi-12","txt":"拆卸清洗","txticonUrl":" ","hot":0,"red":0,"show":0}]},{"modelType":"list_1_row","infoList":[{"cateid":"203","catename":"dianqi","num":"30","listStyle":"hypic"}],"cateid":"203","linkUrl":" ","guide":" ","tag":" ","title":""},{"modelType":"link_4_white_new","cateid":"95","title":"保姆月嫂","guide":"查看全部","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","iconUrl":"","tag":"lunajz-baomu-title","infoList":[{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-1","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2cee65382e60643c582cc673f03cc8a10.png","txt":"钟点工","imgLabel":" ","hot":0,"new":0},{"cateid":"562","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=yuesao&-15=20","tag":"lunajz-baomu-2","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v2f2299e33a63648a785b5b80aa98d6b27.png","txt":"月嫂","imgLabel":" ","hot":0,"new":0},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-3","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v222d0f34219934409abda9db655df3fff.png","txt":"金牌保姆","imgLabel":" ","hot":0,"new":0},{"cateid":"28165","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=yuyingshi&-15=20","tag":"lunajz-baomu-4","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v25baebfaadb704fe29d6d6316ca5f6aee.png","txt":"育婴师","imgLabel":" ","hot":0,"new":0}],"infoList1":[{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-5","txt":"专业陪护","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-6","txt":"全职陪护","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-7","txt":"高级保姆","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-8","txt":"经验丰富","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-9","txt":"高级月嫂","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-10","txt":"住家保姆","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-11","txt":"陪护老人","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"95","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=baomu&-15=20","tag":"lunajz-baomu-12","txt":"免服务费","txticonUrl":" ","hot":0,"red":1,"show":0}]},{"modelType":"list_1_row","infoList":[{"cateid":"95","catename":"baomu","num":"30","listStyle":"hypic"}],"cateid":" ","linkUrl":" ","guide":" ","tag":" ","title":""},{"modelType":"link_13_pic","cateid":" ","title":"其他服务","guide":" ","linkUrl":" ","iconUrl":"","tag":" ","infoList":[[{"cateid":"8523","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=shutong&-15=20","tag":"lunajz-qita-shutong-title","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v225feb512364146d2be5a2284229604e0.png"},{"cateid":"8529","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=xiashuidao&-15=20","tag":"lunajz-qita-shutong-1","txt":"下水道疏通","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"8530","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=weijust&-15=20","tag":"lunajz-qita-shutong-2","txt":"马桶疏通","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"8523","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=shutong&-15=20","tag":"lunajz-qita-shutong-3","txt":"管道疏通","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"8523","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=shutong&-15=20","tag":"lunajz-qita-shutong-4","txt":"高压清洗","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"8523","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=shutong&-15=20","tag":"lunajz-qita-shutong-5","txt":"专业疏通","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"8523","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=shutong&-15=20","tag":"lunajz-qita-shutong-6","txt":"上门服务","txticonUrl":" ","hot":0,"red":0,"show":0}],[{"cateid":"111","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=weixiu&-15=20","tag":"lunajz-qita-weixiu-title","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v22859dc3b90534901b601032508cddb4d.png"},{"cateid":"594","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=taishidiannao&-15=20","tag":"lunajz-qita-weixiu-1","txt":"台式电脑","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"8534","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=bijibenweixiu&-15=20","tag":"lunajz-qita-weixiu-2","txt":"笔记本维修","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"29677","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=ipadpingbanweixiu&-15=20","tag":"lunajz-qita-weixiu-3","txt":"平板维修","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"111","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=weixiu&-15=20","tag":"lunajz-qita-weixiu-7","txt":"全天服务","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"111","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=weixiu&-15=20","tag":"lunajz-qita-weixiu-5","txt":"免费上门","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"111","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=weixiu&-15=20","tag":"lunajz-qita-weixiu-6","txt":"电脑维修","txticonUrl":" ","hot":0,"red":1,"show":0}],[{"cateid":"70123","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=huishoujy&-15=20","tag":"lunajz-qita-huishou-title","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v20488abe54e2041e9ba1edcda83530d48.png"},{"cateid":"403653","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqihuishouxin&-15=20","tag":"lunajz-qita-huishou-1","txt":"电器回收","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"403648","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=shoujihuishouxin&-15=20","tag":"lunajz-qita-huishou-2","txt":"手机回收","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"403674","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=fuzhuanghsxin&-15=20","tag":"lunajz-qita-huishou-3","txt":"服饰回收","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"70123","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=huishoujy&-15=20","tag":"lunajz-qita-huishou-4","txt":"回收","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"403649","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=bangonghuishouxin&-15=20","tag":"lunajz-qita-huishou-5","txt":"办公品回收","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"403645","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=jiajujiadianjiudian&-15=20","tag":"lunajz-qita-huishou-6","txt":"家具回收","txticonUrl":" ","hot":0,"red":0,"show":0}],[{"cateid":"8516","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=fangweixiu&-15=20","tag":"lunajz-qita-fangwu-title","imgUrl":"https://pic2.58cdn.com.cn/brandpic/car/n_v20ac04fcb42e9405799bf6d52c05af72f.png"},{"cateid":"613","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=fangshui&-15=20","tag":"lunajz-qita-fangwu-1","txt":"防水补漏","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"203","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=dianqi&-15=20","tag":"lunajz-qita-fangwu-2","txt":"家电维修","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"8516","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=fangweixiu&-15=20","tag":"lunajz-qita-fangwu-3","txt":"房屋维修","txticonUrl":" ","hot":0,"red":1,"show":0},{"cateid":"8516","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=fangweixiu&-15=20","tag":"lunajz-qita-fangwu-4","txt":"门窗维修","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"8516","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=fangweixiu&-15=20","tag":"lunajz-qita-fangwu-5","txt":"灯具维修","txticonUrl":" ","hot":0,"red":0,"show":0},{"cateid":"8516","linkUrl":"https://luna.58.com/list.shtml?plat=m&city=bj&cate=fangweixiu&-15=20","tag":"lunajz-qita-fangwu-6","txt":"打孔","txticonUrl":" ","hot":0,"red":0,"show":0}]]},{"modelType":"list_new","infoList":[{"cateid":"96","catename":"banjia","title":"专业搬家","num":"30","listStyle":"hydt"},{"cateid":"95","catename":"baomu","title":"金牌保姆","num":"30","listStyle":"hydt"}],"tag":" "}]};
+		</script>
+		        <!-- 新增黄页用户行为埋点 -->
+	    <script type="text/javascript">
+			window.WMDA_SDK_CONFIG = ({
+			    api_v: 1,
+			    sdk_v: 0.1,
+			    mode: 'report',
+			    appid: 1732820940289,
+			    key: '02izt42t',
+			    project_id: '1732052797057',
+			    cookie_domain: document.domain,   //58域下不需要该字段
+			    cate_id: '',   //按需填写
+			    page_extra: [{   //按需填写
+			        key: '',
+			        value: ''
+			    }],
+			    user_extra: [{   //按需填写
+			        key: '',
+			        value: ''
+			    }],
+			    channel: '',   //按需填写
+			    getUserId: function() {}   //按需填写
+			});
+		</script>
+		<script type="text/javascript" src='//j1.58cdn.com.cn/wmda/js/statistic_v20230821100521.js'></script>
+    	    </head>
+    
+    <body class="calendar">
+        <button class="btn" id="btn">去登录</button>
+        <button class="btn" id="btn1">在新窗口打开</button>
+        <button class="btn" id="btn2">在当前窗口replace</button>
+        <button class="btn" id="btn3">进入快应用</button>
+        <button class="btn" id="btn4">返回上一级页面</button>
+    	<div class="main body_div">
+            <div class="lunaSearch">
+                                <a href="//luna.58.com/m/autotemplate?city=bj&creativeid=40" class="logo"><img src="//img.58cdn.com.cn/crop/biz/m/lunaHome/pic/img/logo.png" alt=""></a>
+                <div class="searchTxtarea">
+                    <a href="//luna.58.com/m/bj/city_new.shtml?-15=20&cate=autotemplate&searnum=20&iscate=1&creativeid=4&temname=&url=https%3A%2F%2Fluna.58.com%2Fm%2Fautotemplate%3F%26spm%3Du-2h6kyv2z5988m2wxeg.wx_mjh_huawei_kuaiyingyong%26city%3D__CITY__%26creativeid%3D4%26utm_source%3Dlink" class="city">北京</a>
+                                        <span>
+                        <form action="">
+                            <input type="text" placeholder="找工作 找房子 找搬家" class="searchArea" disabled="disabled">
+                        </form>
+                    </span>
+                                    </div>
+                            </div>
+            <div id="modelList">
+			<!--模块列表容器-->
+			</div>
+		</div>
+                <div class="searchBox">
+            <div class="searchInput">
+                <div class="searchTxtarea">
+                    <a href="//luna.58.com/m/bj/city_new.shtml?-15=20&cate=autotemplate&searnum=20&iscate=1&creativeid=4&url=https%3A%2F%2Fluna.58.com%2Fm%2Fautotemplate%3F%26spm%3Du-2h6kyv2z5988m2wxeg.wx_mjh_huawei_kuaiyingyong%26city%3D__CITY__%26creativeid%3D4%26utm_source%3Dlink" class="city">北京</a>
+                    <span>
+                        <form action="">
+                            <input type="text" placeholder="找工作 找房子 找搬家" class="searchArea">
+                        </form>
+                    </span>
+                </div>
+                <span class="close" class="searchArea">取消</span>
+            </div> 
+
+            <div class="hotSearch">
+                <h2>热门搜索</h2>
+                <div class="hotList">
+                    <ul>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=job&-15=20">高薪招聘</a></li>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=ershoufang&-15=20">二手房</a></li>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=ershoufang&kw=%E5%AD%A6%E5%8C%BA&-15=20">学区房</a></li>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=siji&-15=20">司机</a></li>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=baoanl&-15=20">保安</a></li>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=yewu&-15=20">销售</a></li>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=hezu&u_1601=1&-15=20">温馨合租</a></li>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=danche&-15=20">摩托车</a></li>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=banjia&-15=20">搬家</a></li>
+				<li><a href="//luna.58.com/list.shtml?plat=m&city=bj&cate=kaisuo&-15=20">开锁</a></li>
+
+                    </ul>
+                </div>
+            </div>
+           <div class="searchHistory">
+                <h2>浏览历史</h2>
+                <div class="historyList"></div>
+            </div>
+            <div class="searchList">
+            </div>     
+        </div>
+        
+                <script src="//j1.58cdn.com.cn/git/ecom-fe/tcb/sdk/call-hy/public/bundle_v20230306184114.js"></script>
+        <script src="//j1.58cdn.com.cn/ecom-fe/tcb/sdk/luna-track/lunaTrack_v20221229164719.js" charset="utf-8"></script>
+        <script src='//j1.58cdn.com.cn/crop/biz/m/lunaHome/js/bundle_v20240418155438.js'></script>
+                <script src="//tracklog.58.com/referrer_m.js" async>
+        </script>
+        <script type="text/javascript">
+         var _gaq = _gaq || [],
+         site_name = "M58", 
+         page_type = "index";
+         var _trackURL = "{'cate':'8512','area':'1','pagetype':'index','actiontype':'tongyongclient','GA_pageview':'/m/bj/shenghuo/'}";
+    	</script>
+
+
+        <!--baidu stat-->
+                <script>
+            var _hmt = _hmt || [];
+            (function() {
+              var hm = document.createElement("script");
+              hm.src = "https://hm.baidu.com/hm.js?61a2c03d71188faf435a5e0217e0fdd7";
+              var s = document.getElementsByTagName("script")[0];
+              s.parentNode.insertBefore(hm, s);
+            })();
+	    </script>
+                <!--baidu statm-->
+    </body>
+
+</html>

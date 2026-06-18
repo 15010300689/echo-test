@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        const url = 'baiduboxapp://MzyRWoIRjWzq3pKItz5Dlt3Qhs7xSaKH_dev4388/pages/list/job?cate=zpshengchankaifa&spm=u-2j54deerg988t9vv3g.bd_mzp_qzzp_seo1&city=gz';
+        const [appkey, pageUrl] = url.split('/pages');
+        const [page, params] = pageUrl.split('?');
+        let tempArr = params.split('&');
+        const obj = {}
+        tempArr.forEach(item => {
+            const [key,value] = item.split('=');
+            obj[key] = value;
+        })
+        console.log('appkey', appkey)
+        console.log('page', 'pages' + page)
+        console.log('obj', obj)
+        window.swanInvoke({        
+            appKey:'MzyRWoIRjWzq3pKItz5Dlt3Qhs7xSaKH_dev4389',
+            path: 'pages/list/job',
+            query: {
+                cate:'zpshengchankaifa',
+                spm:'u-2j54deerg988t9vv3g.bd_mzp_qzzp_seo1',
+                city:formData.jumpUrl || 'gz'
+            }
+        });
+
+        window.location.href = 'weixin://dl/business/?appid=wxc97b21c63d084d92&path=/pages/middle-redirect/index&env_version=release&query=launch_source%3Dwx-zp-seo%26path%3Dpages%252Fdetail%252Fjob%252Fjob%253FadType%253D0%2526cate%253Dzpshengchankaifa%2526displistname%253Dzpshengchankaifa%2526infoId%253D52507106239635%2526psid%253D104562359227039500091361916%2526sid%253D104562359227039500091361916%2526slot%253Dlm_seo_m_list%2526tjfrom%253Dlm_list_pt__104562359227039500091361916__6__pt__adtypes__3__null__%257BCID%257D__eyJyIjp7ImluZm9pZCI6IjUyNTA3MTA2MjM5NjM1Iiwic2xvdCI6ImxtX2xpc3RfcHQiLCJ0eXBlIjoiMTQ5Iiwic2lkIjoiMTA0NTYyMzU5MjI3MDM5NTAwMDkxMzYxOTE2In0sInQiOjEsInYiOjEsInciOnsidGNiIjoiMCIsImxlZ29FeHQiOm51bGwsImxtX3Nsb3QiOiJsbV9zZW9fbV9saXN0In19%26spm%3Du-2jzeug7pr988t9vv3g.wx_mzp_seo2'
+
+    </script>
+</body>
+</html>

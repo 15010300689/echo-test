@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+            const dataList = [
+                {
+                    name: '张三',
+                    age: 20
+                }
+            ];
+            const queuedObservers = new Set();
+            const observe = fn => queuedObservers.add(fn);
+            const observable = obj => new Proxy(obj, {set});
+            function set(target, key, val, receiver) {
+                const result = Reflect.set(target, key, val, receiver);
+                queuedObservers.forEach(observer => observer());
+                return result;
+            }
+
+            let person = observable(dataList);
+
+            function print() {
+                let str = 'person：'
+                person.forEach((item) => {
+                    const { name = '', age = '' } = item;
+                    str += `name:${name}，age:${age};`;
+                });
+                console.log(str);
+                console.log('=========++++++');
+            };
+            observe(print);
+            init();
+            function init(){
+                setTimeout(() => {
+                    person.push({
+                        name: '李四',
+                        age: 40
+                    });
+                }, 2000);
+            }
+    </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        function generateDateSequence(startDate, endDate) {
+            const dateArray = [];
+            const currentDate = new Date(startDate);
+            const end = new Date(endDate);
+            while (currentDate <= end) {
+                dateArray.push(new Date(currentDate).toISOString().split('T')[0]);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            return dateArray;
+        }
+
+        // 使用示例
+        const startDate = '2025-12-22';
+        const endDate = '2026-01-04';
+        const dates = generateDateSequence(startDate, endDate);
+        console.log(dates);
+        // dates.forEach(date => console.log(date.toISOString().split('T')[0]));
+
+        const list = [
+            {dt: '2025-12-25', linkClick: null, linkClickRate: null, activeGroup: 1, activeGroupUser: 877},
+            {dt: '2025-12-26', linkClick: null, linkClickRate: null, activeGroup: 1, activeGroupUser: 899}
+        ]
+
+        const newList = dates.map(item => {
+            const tItem = list.find(nItem => nItem.dt === item);
+            const newItem = {
+                dt: (tItem && tItem?.dt) || item,
+                linkClick: (tItem && tItem?.linkClick) || 0,
+                linkClickRate: (tItem && tItem?.linkClickRate) || 0,
+                activeGroup: (tItem && tItem?.activeGroup) || 0,
+                activeGroupUser: (tItem && tItem?.activeGroupUser) || 0
+            }
+            return newItem;
+        })
+        console.log(newList);
+    </script>
+</body>
+</html>

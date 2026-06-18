@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observe</title>
+</head>
+<body>
+    <script>
+        class Observe{
+            constructor() {
+                this.message = {};
+            }
+
+            on(id, fn) {
+                if (!this.message[id]) {
+                    this.message[id] = [fn];
+                }
+            }
+
+            off(id, fn) {
+                if (!this.message[id]) return;
+                this.message[id] = this.message[id].filter((item) => item !== fn);
+            }
+
+            trigger(id, content) {
+                if (!this.message[id]) return;
+                this.message[id].forEach((fn) => fn(content));
+            }
+        }
+        const observe = new Observe();
+        // 获取联系人列表
+        let contackList = [
+            {
+                name: '张三',
+                id: 1,
+                lastMsg: '你好',
+                lastMsgTime: '2023-11-24',
+                lastMsgId: 1,
+                unReadCount: 2,
+            },
+            {
+                name: '李四',
+                id: 2,
+                lastMsg: '欢迎欢迎',
+                lastMsgTime: '2023-11-25',
+                lastMsgId: 5,
+                unReadCount: 1,
+            }
+        ];
+        let currentId = 2;
+        let currentMsgList = [
+            {
+                name: '李四',
+                id: 2,
+                unReadCount: 0,
+                msgList: [
+                    {
+                        text: '欢迎欢迎',
+                        msgTime: '2023-11-25',
+                        msgId: 5,
+                    }
+                ],
+            }
+        ];
+        // 订阅消息
+        function sub() {
+            contackList.forEach((item, index) => observe.on(item.id, (content) => {
+                const {
+                    msgList = [],
+                } = content;
+                let lastMsg = msgList.length > 0 ? msgList[msgList.length - 1] : {};
+                if(!lastMsg) return;
+                const { msgTime = '', text = '', msgId = '' } = lastMsg;
+                if (item.lastMsgId == msgId) return;
+                console.log('您有新消息，消息内容为：', text, msgList);
+                console.log('=====================');
+                // 未读消息数：
+                let unReadCount = item.unReadCount;
+                if (msgList.length > 0) {
+                    unReadCount += msgList.length;
+                }
+                contackList[index] = {
+                    ...item,
+                    lastMsg: text || item.lastMsg,
+                    msgTime,
+                    unReadCount
+                }
+
+                if (item.id === currentId) {
+                    let newContent = content;
+                    newContent = {
+                        ...content,
+                        unReadCount: unReadCount || 0,
+                        msgList: currentMsgList[0].msgList.concat(msgList)
+                    };
+
+                    currentMsgList = [newContent];
+                }
+            }));
+            // 【异步】延迟去刷新联系人列表
+            setTimeout(() => {
+                console.log(contackList, '联系人列表更新');
+                console.log(currentMsgList, '聊天面板更新');
+            }, 500);
+        }
+        // 聊天面板订阅聊天消息
+        function sub2() {
+            console.log(currentId, 'sub2');
+            observe.on(currentId, (content) => {
+                console.log(content, 'sub2===');
+                const {
+                    msgList = [],
+                    msgTime = '',
+                    type = '',
+                } = content;
+                let newContent = content;
+                let unReadCount = currentMsgList[0].msgList.length || 0;
+                if (msgList.length > 0) {
+                    unReadCount += msgList.length;
+                }
+                newContent = {
+                    ...content,
+                    unReadCount: unReadCount || 0,
+                    msgList: currentMsgList[0].msgList.concat(msgList)
+                };
+                currentMsgList = [newContent];
+            })
+
+            // 【异步】延迟去刷新聊天面板
+            setTimeout(() => {
+                console.log(currentMsgList, '聊天面板更新')
+            }, 5000);
+        }
+        
+
+        // 消息库
+        const messageList = [
+            {
+                name: '张三',
+                id: 1,
+                msgList: [
+                    {
+                        text: '哈哈',
+                        msgTime: '2023-11-25',
+                        msgId: 6,
+                    }
+                ],
+            },
+            {
+                name: '李四',
+                id: 2,
+                msgList: [
+                    {
+                        text: '哈哈哈',
+                        msgTime: '2023-11-25',
+                        msgId: 7,
+                    }
+                ],
+            },
+            {
+                name: '王五',
+                id: 3,
+                msgList: [
+                    {
+                        text: ' 王五，请多关照',
+                        msgTime: '2023-11-25',
+                        msgId: 8,
+                    }
+                ],
+            },
+            // {
+            //     name: '赵六',
+            //     id: 4,
+            //     msgList: [
+            //         {
+            //             text: ' 赵六赵六',
+            //             msgTime: '2023-11-25',
+            //             msgId: 9,
+            //         }
+            //     ],
+            // },
+            // {
+            //     name: '胡子',
+            //     id: 5,
+            //     msgList: [
+            //         {
+            //             text: ' 胡子',
+            //             msgTime: '2023-11-25',
+            //             msgId: 10,
+            //         }
+            //     ],
+            // },
+            // {
+            //     name: '牛牛',
+            //     id: 6,
+            //     msgList: [
+            //         {
+            //             text: ' 牛牛～',
+            //             msgTime: '2023-11-25',
+            //             msgId: 11,
+            //         }
+            //     ],
+            // },
+            // {
+            //     name: '大姐',
+            //     id: 7,
+            //     msgList: [
+            //         {
+            //             text: ' 干啥呢',
+            //             msgTime: '2023-11-25',
+            //             msgId: 12,
+            //         }
+            //     ],
+            // },
+            // {
+            //     name: '小妹',
+            //     id: 8,
+            //     msgList: [
+            //         {
+            //             text: ' 在么',
+            //             msgTime: '2023-11-25',
+            //             msgId: 13,
+            //         }
+            //     ],
+            // }
+        ];
+        // 轮询去拿未读消息
+        // 未读为读过之后，要标记为已读，并且从未读列表删除
+        // 未读的基础上，又有新的未读，要在之前的基础上叠加
+        let unReadmsgList = [];
+
+        function initUnReadMsgList() {
+            const msgList = messageList.pop();
+            if (!msgList) return;
+            unReadmsgList = unReadmsgList.concat([msgList]);
+            pub();
+            setTimeout(() => {
+                initUnReadMsgList();
+            }, 1000);
+        }
+        function pub() {
+            console.log('pub', unReadmsgList);
+            unReadmsgList.forEach((item) => observe.trigger(item.id, item));
+        }
+        sub();
+        // sub2();
+        initUnReadMsgList();
+        // TODO:页面关闭、程序退出的时候取消订阅
+        observe.off(currentId);
+        for (let key in observe.message) {
+            observe.off(key);
+        }
+
+    </script>
+</body>
+</html>

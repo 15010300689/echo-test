@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: black;
+            margin: 100px;
+        }
+        .loader,
+        span,
+        .spinner {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+        }
+
+        span {
+            line-height: 200px;
+            font-size: 20px;
+            font-family: 'Robot', sans-serif;
+            letter-spacing: 1px;
+            color: #ffffff00;
+            text-align: center;
+            text-shadow: 
+                0 0 0 #ffffffbf,
+                0 0 2px #1e90ff,
+                0 0 4px #1e90ff,
+                0 0 6px #1e90ff,
+                0 0 8px #1e90ff,
+                0 0 10px #1e90ff;
+        }
+        .spinner{
+            border-radius: 50%;
+            box-shadow: 
+                3px 0 1px -1px #fff,
+                5px 0 5px #1e90ff80,
+                inset -10px 0 10px -5px #1e90ff80;
+            animation: loading 1s linear infinite;
+        }
+        .spinner::before {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            margin: 10% 0 0 10%;
+            border-radius: 50%;
+            content: '';
+            box-shadow: 
+                2px 0 1px -1px #fff,
+                10px 0 5px -5px #1e90ff80,
+                inset -3px 0 3px #1e90ff80;
+        }
+        @keyframes loading {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <span id="counter">
+            Loading...
+            <!-- <i>50%</i> -->
+        </span>
+        <div class="spinner"></div>
+    </div>
+    <script>
+        const $i = document.querySelector('i');
+        let progress = 0;
+        let intervalId = null;
+        intervalId = setInterval(() => {
+            progress++;
+            $i.innerText = `${progress}%`
+            if (progress === 100) {
+                clearInterval(intervalId);
+            }
+        }, 100);
+    </script>
+</body>
+</html>

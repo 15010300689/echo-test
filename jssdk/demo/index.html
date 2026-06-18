@@ -1,0 +1,262 @@
+重试
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Frontend Runtime Self-Heal Demo</title>
+        <style>
+        :root {
+            color-scheme: light;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f6f7f9;
+            color: #17202a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        main {
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        .shell {
+            max-width: 980px;
+            margin: 0 auto;
+            display: grid;
+            gap: 20px;
+        }
+
+        header {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.15;
+        }
+
+        .status {
+            min-width: 180px;
+            padding: 10px 12px;
+            border: 1px solid #cfd7e2;
+            border-radius: 8px;
+            background: #ffffff;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .panel {
+            position: relative;
+            min-height: 260px;
+            padding: 20px;
+            border: 1px solid #d7dee8;
+            border-radius: 8px;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .panel h2 {
+            margin: 0 0 10px;
+            font-size: 17px;
+        }
+
+        .panel p {
+            max-width: 54ch;
+            margin: 0 0 18px;
+            color: #526173;
+            font-size: 14px;
+            line-height: 1.55;
+      }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .primary {
+            min-width: 120px;
+            min-height: 42px;
+            border: 0;
+            border-radius: 7px;
+            background: #1264a3;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .primary:focus-visible,
+        input:focus-visible {
+            outline: 3px solid #f7c948;
+            outline-offset: 2px;
+        }
+
+        .ghost-overlay {
+            position: absolute;
+            left: 12px;
+            top: 88px;
+            width: 210px;
+            height: 92px;
+            z-index: 5;
+            background: rgba(231, 236, 244, 0.01);
+        }
+        .tiny {
+            width: 22px;
+            height: 22px;
+            border: 0;
+            border-radius: 4px;
+            background: #bf3f3f;
+            color: #ffffff;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .form-panel {
+            display: grid;
+            align-content: start;
+            gap: 12px;
+        }
+
+        label {
+            display: grid;
+            gap: 6px;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        input {
+            width: min(100%, 360px);
+            min-height: 42px;
+            border: 1px solid #aab7c7;
+            border-radius: 7px;
+            padding: 8px 10px;
+        }
+
+        .log {
+            height: 180px;
+            overflow: auto;
+            padding: 12px;
+            border: 1px solid #cfd7e2;
+            border-radius: 8px;
+            background: #111827;
+            color: #d7f9e9;
+            font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+
+        @media (max-width: 760px) {
+            main {
+                padding: 18px;
+            }
+
+            header,
+            .grid {
+                grid-template-columns: 1fr;
+                display: grid;
+            }
+
+            .panel {
+                min-height: 230px;
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <main>
+            <div class="shell">
+                <header>
+                    <div>
+                        <h1>前端运行时自愈 SDK 原型</h1>
+                    </div>
+                    <div class="status" id="status">SDK: starting</div>
+                </header>
+      
+                <section class="grid">
+                    <article class="panel">
+                        <h2>点击遮挡</h2>
+                        <p>透明遮罩覆盖了提交按钮。第一次点击会失败并触发证据链，SDK 验证微补丁后会放行后续点击。</p>
+                        <button class="primary" id="submitButton" data-testid="submit-button">提交订单</button>
+                        <div class="ghost-overlay" aria-hidden="true"></div>
+                    </article>
+        
+                    <article class="panel">
+                        <h2>小命中区域</h2>
+                        <p>这个按钮的可点击面积低于 44x44。SDK 会生成最小命中区域补丁。</p>
+                        <button class="tiny" id="tinyButton" aria-label="关闭">x</button>
+                    </article>
+        
+                    <article class="panel form-panel">
+                        <h2>虚拟键盘遮挡</h2>
+                        <p>在移动设备或窄屏中聚焦输入框，SDK 会根据 visualViewport 变化补充滚动安全距离。</p>
+                        <label>
+                            邮箱
+                            <input id="emailInput" type="email" placeholder="name@example.com">
+                        </label>
+                        <label>
+                            备注
+                            <input id="noteInput" type="text" placeholder="输入备注">
+                        </label>
+                        <button class="primary" id="saveButton">保存</button>
+                    </article>
+        
+                    <article class="panel">
+                        <h2>证据日志</h2>
+                        <p>日志展示 SDK 从失败事件到补丁应用的关键路径。</p>
+                        <pre class="log" id="log"></pre>
+                    </article>
+                </section>
+            </div>
+        </main>
+        <script src="../sdk/self-heal-sdk.js"></script>
+        <script>
+            const logEl = document.querySelector("#log");
+            const statusEl = document.querySelector("#status");
+
+            function log(message, data) {
+                const line = `[${new Date().toLocaleTimeString()}] ${message}`;
+                logEl.textContent += `${line}${data ? "\n" + JSON.stringify(data, null, 2) : ""}\n`;
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+
+            const sdk = new FrontendSelfHeal({ debug: true }).start();
+            statusEl.textContent = "SDK: running";
+
+            const originalHandleEvidence = sdk.handleEvidence.bind(sdk);
+            sdk.handleEvidence = async (evidence) => {
+                log(`evidence: ${evidence.failureType}`, evidence.evidenceChain);
+                const result = await originalHandleEvidence(evidence);
+                if (result) {
+                    log(`patch applied: ${result.patch.id}`, result.metrics);
+                } else {
+                    log("no patch applied");
+                }
+                return result;
+            };
+
+        document.querySelector("#submitButton").addEventListener("click", () => {
+            log("submit handler fired");
+        });
+
+        document.querySelector("#tinyButton").addEventListener("click", () => {
+            log("tiny button handler fired");
+        });
+
+        document.querySelector("#saveButton").addEventListener("click", () => {
+            log("save handler fired");
+        });
+        </script>
+    </body>
+</html>
