@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <p>hello world</p>
+    </div>
+    <script type="text/javascript">
+        class Vue {
+            constructor(options){
+                options.created.bind(this)();
+                this.$el = document.getElementById(options.el);
+                options.mounted.bind(this)();
+            }
+
+            $nextTick(callBack){
+                Promise.resolve().then(() => {
+                    callBack && callBack();
+                })
+            }
+        }
+        new Vue({
+            el: 'app',
+            created(){
+                console.log('created', this.$el);
+                this.$nextTick(() => {
+                    console.log('nextTick', this.$el);
+                })
+            },
+            mounted(){
+                console.log('mounted', this.$el);
+            }
+        })
+    </script>
+</body>
+</html>

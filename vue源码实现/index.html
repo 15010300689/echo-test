@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let data = {
+            a: 1,
+            b: 2
+        }
+
+        // vue2的实现思路
+        // const vue = {}
+        // for (let key in data) {
+        //     Object.defineProperty(vue, key, {
+        //         get() {
+        //             return data[key];
+        //         },
+        //         set(newVal) {
+        //             data[key] = newVal;
+        //         }
+        //     })
+        // }
+
+
+        // vue.c = 100;
+        // console.log('vue===', vue)
+        // console.log('data===', data)
+
+        // vue3的实现思路
+        const vue = new Proxy(data, {
+            get(target, key, receiver) {
+                return Reflect.get(target, key, receiver);
+            },
+            set(target, key, value, receiver) {
+                return Reflect.set(target, key, value, receiver);
+            }
+        })
+
+        vue.c = 100;
+        console.log('vue===', vue)
+        console.log('data===', data)
+    </script>
+</body>
+</html>

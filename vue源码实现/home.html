@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <p>{{ message }}</p>
+        <p>{{ str }}</p>
+        <p>{{ a }}</p>
+        <p>{{ b }}</p>
+        <button @click="clickBtn">按钮</button>
+        <p>{{ str }}</p>
+        <p>{{ str }}</p>
+        <p>{{ str }}</p>
+        <input type="text" v-model="str" />
+    </div>
+    <script type="text/javascript" src="./vue.js">
+    </script>
+    <script type="text/javascript">
+        new Vue({
+            el: '#app',
+            data: {
+                message: 'hello world',
+                str: 'hello vue',
+                a: 1,
+                b: 2,
+            },
+            beforeCreate(){
+                console.log('beforeCreate', this.$el, this.$data);
+            },
+            created(){
+                console.log('created', this.$el, this.$data);
+            },
+            beforeMount(){
+                console.log('beforeMount', this.$el, this.$data);
+            },
+            mounted(){
+                console.log('mounted', this.$el, this.$data);
+            },
+            beforeUpdate(){},
+            updated(){},
+            beforeDestroy(){},
+            destroyed(){},
+            methods: {
+                clickBtn(e) {
+                    this.str = '按钮点击了'
+                }
+            }
+        })
+    </script>
+</body>
+</html>
