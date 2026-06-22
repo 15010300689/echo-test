@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>虚拟dom</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script>
+        const app = document.getElementById('app');
+        const app2 = document.getElementById('app2');
+        console.time('a');
+        let num = 0;
+        for (let i = 0; i <= 1000000; i++) {
+            num = i;
+            app.innerHTML = num;
+        }
+        console.timeEnd('a');
+
+        console.time('b');
+        let num1 = 0;
+        for (let i = 0; i <= 1000000; i++) {
+            num1 = i;
+        }
+        app.innerHTML += num;
+        console.timeEnd('b');
+
+    </script>
+</body>
+</html>
